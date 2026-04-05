@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カスタムくじ引きツール</title>
+    <style>
+        :root {
+            --text-color: #333333;
+            --font-family: "sans-serif";
+            --title-size: 40px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background-color: #ffffff;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: var(--font-family);
+            color: var(--text-color);
+        }
+
+        /* 左側：メイン表示エリア */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* タイトルと結果を画面中央に */
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; 
+        }
+
+        /* タイトルと結果をひとまとめにする */
+        .content-group {
+            transform: translateY(-20px); /* ボタンがない分、少しだけ上に詰めると綺麗に見えます */
+        }
+
+        #main-title {
+            font-size: var(--title-size);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+        }
+
+        #result-display {
+            font-size: 6rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(255,255,255,0.9);
+            min-height: 1.2em;
+        }
+
+        /* ボタンを画面下部に固定 */
+        .button-wrapper {
+            position: absolute;
+            bottom: 60px; /* 画面の一番下から60pxの位置 */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        button.draw-btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 20px 80px;
+            font-size: 2.2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        button.draw-btn:hover { background-color: #ff6b81; }
+        button.draw-btn:active { transform: scale(0.95); }
+
+        /* 右側：設定パネル */
+        .side-panel {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 1px solid #ddd;
+            padding: 25px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+
+        .setting-item { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #444; }
+        textarea, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        h3 { margin-top: 0; color: #ff4757; border-bottom: 2px solid #ff4757; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container" id="main-area">
+        <div class="content-group">
+            <div id="main-title">本日の運勢くじ</div>
+            <div id="result-display">？？？</div>
+        </div>
+        
+        <div class="button-wrapper">
+            <button class="draw-btn" onclick="drawKuji()">くじを引く！</button>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <h3>🛠 カスタム設定</h3>
+        <div class="setting-item">
+            <label>タイトルテキスト</label>
+            <input type="text" id="title-input" value="本日の運勢くじ">
+        </div>
+        <div class="setting-item">
+            <label>フォント指定 (PC内の名前)</label>
+            <input type="text" id="font-name-input" placeholder="例: HG行書体, Meiryo">
+        </div>
+        <div class="setting-item">
+            <label>文字色</label>
+            <input type="color" id="color-picker" value="#333333" style="width: 100%; height: 40px; border:none; cursor:pointer;">
+        </div>
+        <div class="setting-item">
+            <label>タイトルサイズ(px)</label>
+            <input type="number" id="title-size-input" value="40">
+        </div>
+        <div class="setting-item">
+            <label>背景画像</label>
+            <input type="file" id="bg-input" accept="image/*">
+        </div>
+        <div class="setting-item">
+            <label>くじの内容（改行区切り）</label>
+            <textarea id="kuji-list" rows="10">大吉
+中吉
+小吉
+吉
+末吉
+凶</textarea>
+        </div>
+    </div>
+
+    <script>
+        const titleInput = document.getElementById('title-input');
+        const fontNameInput = document.getElementById('font-name-input');
+        const titleSizeInput = document.getElementById('title-size-input');
+        const mainTitle = document.getElementById('main-title');
+        const bgInput = document.getElementById('bg-input');
+        const colorPicker = document.getElementById('color-picker');
+        const resultDisplay = document.getElementById('result-display');
+        const kujiList = document.getElementById('kuji-list');
+
+        titleInput.addEventListener('input', (e) => mainTitle.textContent = e.target.value);
+        fontNameInput.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--font-family', e.target.value || "sans-serif");
+        });
+        titleSizeInput.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--title-size', e.target.value + 'px');
+        });
+        bgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => document.body.style.backgroundImage = `url('${event.target.result}')`;
+                reader.readAsDataURL(file);
+            }
+        });
+        colorPicker.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--text-color', e.target.value);
+        });
+
+        function drawKuji() {
+            const items = kujiList.value.split('\n').map(item => item.trim()).filter(item => item !== "");
+            if (items.length === 0) return;
+            let count = 0;
+            const shuffleInterval = setInterval(() => {
+                resultDisplay.textContent = items[Math.floor(Math.random() * items.length)];
+                count++;
+                if (count > 12) {
+                    clearInterval(shuffleInterval);
+                    resultDisplay.textContent = items[Math.floor(Math.random() * items.length)];
+                }
+            }, 60);
+        }
+    </script>
+</body>
+</html>
