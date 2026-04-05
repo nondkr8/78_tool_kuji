@@ -6,6 +6,7 @@
     <title>カスタムくじ引きツール Pro</title>
     <style>
         :root {
+            --main-theme: #db7093;
             --bg-image: none;
             /* タイトル用 */
             --title-font: "sans-serif";
@@ -15,10 +16,11 @@
             /* 結果用 */
             --result-font: "sans-serif";
             --result-color: #333333;
+            --result-size: 96px;
             --result-weight: bold;
             /* ボタン用 */
             --btn-font: "sans-serif";
-            --btn-bg-color: #ff4757;
+            --btn-bg-color: #db7093;
             --btn-text-color: #ffffff;
             --btn-weight: bold;
         }
@@ -66,7 +68,7 @@
             font-family: var(--result-font);
             color: var(--result-color);
             font-weight: var(--result-weight);
-            font-size: 6rem;
+            font-size: var(--result-size);
             text-shadow: 2px 2px 10px rgba(255,255,255,0.9);
             min-height: 1.2em;
         }
@@ -86,7 +88,7 @@
             font-weight: var(--btn-weight);
             border: none;
             padding: 20px 80px;
-            font-size: 2.2rem;
+            font-size: 32px;
             border-radius: 60px;
             cursor: pointer;
             transition: transform 0.1s, opacity 0.2s;
@@ -108,8 +110,8 @@
             z-index: 100;
         }
 
-        h3 { margin: 0 0 15px 0; color: #ff4757; border-bottom: 2px solid #ff4757; padding-bottom: 5px; }
-        h4 { margin: 15px 0 8px 0; font-size: 0.9rem; background: #f0f0f0; padding: 5px; border-left: 4px solid #ff4757; }
+        h3 { margin: 0 0 15px 0; color: var(--main-theme); border-bottom: 2px solid var(--main-theme); padding-bottom: 5px; }
+        h4 { margin: 15px 0 8px 0; font-size: 0.9rem; background: #f0f0f0; padding: 5px; border-left: 4px solid var(--main-theme); }
         
         .setting-item { margin-bottom: 10px; }
         label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 0.8rem; color: #444; }
@@ -128,6 +130,11 @@
 
         input[type="color"] { width: 100%; height: 35px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: none; }
         
+        /* チェックボックスのアクセントカラーを #db7093 に */
+        input[type="checkbox"] {
+            accent-color: var(--main-theme);
+        }
+
         .bold-toggle {
             display: flex;
             align-items: center;
@@ -138,6 +145,25 @@
     </style>
 </head>
 <body>
+
+    <datalist id="font-list">
+        <option value="MS UI Gothic">
+        <option value="MS PGothic">
+        <option value="MS PMincho">
+        <option value="Meiryo">
+        <option value="Yu Gothic">
+        <option value="Yu Mincho">
+        <option value="HG行書体">
+        <option value="HG正楷書体-PRO">
+        <option value="HG丸ｺﾞｼｯｸM-PRO">
+        <option value="BIZ UDPGothic">
+        <option value="Hiragino Kaku Gothic ProN">
+        <option value="Hiragino Mincho ProN">
+        <option value="ビルの谷間と高架下 フリー版">
+        <option value="sans-serif">
+        <option value="serif">
+        <option value="cursive">
+    </datalist>
 
     <div class="main-container" id="main-area">
         <div class="content-group">
@@ -150,14 +176,14 @@
     </div>
 
     <div class="side-panel">
-        <h3>🛠 カスタム設定</h3>
+        <h3> カスタム設定</h3>
 
-        <h4>🖼 背景設定</h4>
+        <h4> 背景設定</h4>
         <div class="setting-item">
             <input type="file" id="bg-input" accept="image/*">
         </div>
 
-        <h4>📝 題名（タイトル）設定</h4>
+        <h4> 題名（タイトル）設定</h4>
         <div class="setting-item">
             <input type="text" id="title-text" value="本日の運勢くじ">
         </div>
@@ -165,10 +191,10 @@
             <div class="flex-row">
                 <div>
                     <label>フォント名</label>
-                    <input type="text" id="title-font" placeholder="Meiryo">
+                    <input type="text" id="title-font" list="font-list" placeholder="Meiryo">
                 </div>
                 <div style="flex:0.4">
-                    <label>サイズ</label>
+                    <label>サイズ(px)</label>
                     <input type="number" id="title-size" value="40">
                 </div>
             </div>
@@ -180,10 +206,18 @@
             </div>
         </div>
 
-        <h4>✨ くじ結果の設定</h4>
+        <h4> くじ結果の設定</h4>
         <div class="setting-item">
-            <label>フォント名</label>
-            <input type="text" id="result-font" placeholder="HG行書体">
+            <div class="flex-row">
+                <div style="flex:2">
+                    <label>フォント名</label>
+                    <input type="text" id="result-font" list="font-list" placeholder="HG行書体">
+                </div>
+                <div style="flex:0.6">
+                    <label>サイズ(px)</label>
+                    <input type="number" id="result-size-input" value="96">
+                </div>
+            </div>
         </div>
         <div class="setting-item">
             <div class="flex-row">
@@ -192,16 +226,16 @@
             </div>
         </div>
 
-        <h4>🔘 ボタンの設定</h4>
+        <h4> ボタンの設定</h4>
         <div class="setting-item">
             <label>フォント名</label>
-            <input type="text" id="btn-font" placeholder="sans-serif">
+            <input type="text" id="btn-font" list="font-list" placeholder="sans-serif">
         </div>
         <div class="setting-item">
             <div class="flex-row">
                 <div>
                     <label>背景色</label>
-                    <input type="color" id="btn-bg-color" value="#ff4757">
+                    <input type="color" id="btn-bg-color" value="#db7093">
                 </div>
                 <div>
                     <label>文字色</label>
@@ -211,7 +245,7 @@
             </div>
         </div>
 
-        <h4>📋 くじの内容（改行区切り）</h4>
+        <h4> くじの内容（改行区切り）</h4>
         <textarea id="kuji-list" rows="8">大吉
 中吉
 小吉
@@ -221,7 +255,6 @@
     </div>
 
     <script>
-        // 要素の取得
         const inputs = {
             bg: document.getElementById('bg-input'),
             titleText: document.getElementById('title-text'),
@@ -230,6 +263,7 @@
             titleColor: document.getElementById('title-color'),
             titleBold: document.getElementById('title-bold'),
             resultFont: document.getElementById('result-font'),
+            resultSize: document.getElementById('result-size-input'),
             resultColor: document.getElementById('result-color'),
             resultBold: document.getElementById('result-bold'),
             btnFont: document.getElementById('btn-font'),
@@ -244,7 +278,11 @@
             btn: document.getElementById('draw-button')
         };
 
-        // イベント設定：背景
+        const setFont = (varName, val) => {
+            const fontValue = val ? `"${val}", sans-serif` : 'sans-serif';
+            document.documentElement.style.setProperty(varName, fontValue);
+        };
+
         inputs.bg.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -254,25 +292,22 @@
             }
         });
 
-        // イベント設定：タイトル
         inputs.titleText.addEventListener('input', (e) => displays.title.textContent = e.target.value);
-        inputs.titleFont.addEventListener('input', (e) => document.documentElement.style.setProperty('--title-font', e.target.value || 'sans-serif'));
+        inputs.titleFont.addEventListener('input', (e) => setFont('--title-font', e.target.value));
         inputs.titleSize.addEventListener('input', (e) => document.documentElement.style.setProperty('--title-size', e.target.value + 'px'));
         inputs.titleColor.addEventListener('input', (e) => document.documentElement.style.setProperty('--title-color', e.target.value));
         inputs.titleBold.addEventListener('change', (e) => document.documentElement.style.setProperty('--title-weight', e.target.checked ? 'bold' : 'normal'));
 
-        // イベント設定：結果
-        inputs.resultFont.addEventListener('input', (e) => document.documentElement.style.setProperty('--result-font', e.target.value || 'sans-serif'));
+        inputs.resultFont.addEventListener('input', (e) => setFont('--result-font', e.target.value));
+        inputs.resultSize.addEventListener('input', (e) => document.documentElement.style.setProperty('--result-size', e.target.value + 'px'));
         inputs.resultColor.addEventListener('input', (e) => document.documentElement.style.setProperty('--result-color', e.target.value));
         inputs.resultBold.addEventListener('change', (e) => document.documentElement.style.setProperty('--result-weight', e.target.checked ? 'bold' : 'normal'));
 
-        // イベント設定：ボタン
-        inputs.btnFont.addEventListener('input', (e) => document.documentElement.style.setProperty('--btn-font', e.target.value || 'sans-serif'));
+        inputs.btnFont.addEventListener('input', (e) => setFont('--btn-font', e.target.value));
         inputs.btnBg.addEventListener('input', (e) => document.documentElement.style.setProperty('--btn-bg-color', e.target.value));
         inputs.btnText.addEventListener('input', (e) => document.documentElement.style.setProperty('--btn-text-color', e.target.value));
         inputs.btnBold.addEventListener('change', (e) => document.documentElement.style.setProperty('--btn-weight', e.target.checked ? 'bold' : 'normal'));
 
-        // くじ引き機能
         function drawKuji() {
             const list = document.getElementById('kuji-list').value.split('\n').map(s => s.trim()).filter(s => s !== "");
             if (list.length === 0) return;
